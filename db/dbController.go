@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	_ "github.com/lib/pq"
 )
 
 const (
-	host      = "127.0.0.1"
+	host      = "localhost"
 	port      = 5432
 	user      = "postgres"
 	password  = "277353"
@@ -22,12 +23,13 @@ func ConnectDB() *sql.DB {
 	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	db, err := sql.Open("postgres", psqlconn)
-	if err != nil {
-		log.Panic(err)
-		return nil
-	}
 
-	err = db.Ping()
+	for err, i := db.Ping(), 0; err != nil && i < 5; i++ {
+		time.Sleep(time.Millisecond * 1000)
+		db, err = sql.Open("postgres", psqlconn)
+
+		fmt.Println(i, "st try")
+	}
 	if err != nil {
 		log.Panic(err)
 		return nil

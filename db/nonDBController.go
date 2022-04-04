@@ -29,6 +29,10 @@ func GetDataNonDB(pathData string) {
 		log.Fatal(err)
 	}
 
+	if len(file) == 0 {
+		Data = make(map[int]string)
+		return
+	}
 	err = json.Unmarshal(file, &Data)
 	if err != nil {
 		log.Fatal(err)
