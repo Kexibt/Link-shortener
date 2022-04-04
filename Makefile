@@ -15,4 +15,8 @@ run-db:
 
 .PHONY: run
 run:
+<<<<<<< HEAD
 	go run .
+=======
+	go run .
+>>>>>>> e5e1916bc9f57b2dcdc0db0b81e29c76684ed804
