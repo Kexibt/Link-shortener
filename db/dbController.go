@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"database/sql"
@@ -15,10 +15,10 @@ const (
 	user      = "postgres"
 	password  = "277353"
 	dbname    = "urls"
-	errorPage = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+	ErrorPage = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 )
 
-func connectDB() *sql.DB {
+func ConnectDB() *sql.DB {
 	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 
 	db, err := sql.Open("postgres", psqlconn)
@@ -33,17 +33,19 @@ func connectDB() *sql.DB {
 		return nil
 	}
 
+	db.Exec("CREATE TABLE IF NOT EXIST urls")
+
 	return db
 }
 
-func findActualDB(ID int) string {
-	db := connectDB()
+func FindActualDB(ID int) string {
+	db := ConnectDB()
 	if db == nil {
 		log.Panic("database is not connected")
 	}
 	defer db.Close()
 
-	if ID > getLastDB() {
+	if ID > GetLastDB() {
 		return "error"
 	}
 
@@ -68,8 +70,8 @@ func findActualDB(ID int) string {
 	return link
 }
 
-func getLastDB() int {
-	db := connectDB()
+func GetLastDB() int {
+	db := ConnectDB()
 	if db == nil {
 		log.Panic("database is not connected")
 	}
@@ -93,8 +95,8 @@ func getLastDB() int {
 	return lastID
 }
 
-func wasHereDB(actualLink string) int {
-	db := connectDB()
+func WasHereDB(actualLink string) int {
+	db := ConnectDB()
 	if db == nil {
 		log.Panic("database is not connected")
 	}
@@ -118,8 +120,8 @@ func wasHereDB(actualLink string) int {
 	return ID
 }
 
-func insertDB(ID int, actualLink string) {
-	db := connectDB()
+func InsertDB(ID int, actualLink string) {
+	db := ConnectDB()
 	if db == nil {
 		log.Panic("database is not connected")
 	}

@@ -1,4 +1,4 @@
-package main
+package url
 
 import (
 	"math"
@@ -8,7 +8,7 @@ const (
 	st = 63
 )
 
-func convertToShort(num int) string {
+func ConvertToShort(num int) string {
 	array := []int{}
 
 	if num == 0 {
@@ -41,7 +41,7 @@ func convertToShort(num int) string {
 	return shortLink
 }
 
-func convertToID(shortLink string) int {
+func ConvertToID(shortLink string) int {
 	res := 0
 	size := len(shortLink)
 

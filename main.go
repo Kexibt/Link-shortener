@@ -7,6 +7,9 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/Kexibt/Link-shortener/db"
+	"github.com/Kexibt/Link-shortener/url"
 )
 
 const (
@@ -40,9 +43,9 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 		actualLink := ""
 		if *dbUsage {
-			actualLink = findActualDB(convertToID(shortLink))
+			actualLink = db.FindActualDB(url.ConvertToID(shortLink))
 		} else {
-			actualLink = findActualNonDB(convertToID(shortLink))
+			actualLink = db.FindActualNonDB(url.ConvertToID(shortLink))
 		}
 
 		response, err := json.Marshal(Request{Link: actualLink})
@@ -58,19 +61,19 @@ func index(w http.ResponseWriter, r *http.Request) {
 		ind := 0
 
 		if *dbUsage {
-			ind = wasHereDB(actualLink)
+			ind = db.WasHereDB(actualLink)
 			if ind <= 0 {
-				ind = getLastDB() + 1
-				insertDB(ind, actualLink)
+				ind = db.GetLastDB() + 1
+				db.InsertDB(ind, actualLink)
 			}
 		} else {
-			ind = wasHereNonDB(actualLink)
+			ind = db.WasHereNonDB(actualLink)
 			if ind <= 0 {
-				ind = getLastNonDB() + 1
-				insertNonDB(ind, actualLink)
+				ind = db.GetLastNonDB() + 1
+				db.InsertNonDB(ind, actualLink)
 			}
 		}
-		shortLink := urlHost + portHost + "/" + convertToShort(ind)
+		shortLink := urlHost + portHost + "/" + url.ConvertToShort(ind)
 
 		response, err := json.Marshal(Request{Link: shortLink})
 		if err != nil {
@@ -94,7 +97,7 @@ func main() {
 	// P.S. это несложно сделать, нужно в каждом if-else блоке, где проверяется
 	// dbUsage, при обработке POST-запроса делать запись в каждую бд
 	if !*dbUsage {
-		getDataNonDB()
+		db.GetDataNonDB(db.GetPath())
 	}
 	mux := http.NewServeMux()
 

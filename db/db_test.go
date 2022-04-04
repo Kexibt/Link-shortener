@@ -1,11 +1,13 @@
-package main
+package db
 
 import (
 	"testing"
+
+	"github.com/Kexibt/Link-shortener/url"
 )
 
 func TestConnect(t *testing.T) {
-	db := connectDB()
+	db := ConnectDB()
 
 	err := db.Ping()
 	if err != nil {
@@ -15,8 +17,8 @@ func TestConnect(t *testing.T) {
 }
 
 func TestFindActualDB(t *testing.T) {
-	act := findActualDB(convertToID("iDontThinЯ"))
-	if act != "error" && act != errorPage {
+	act := FindActualDB(url.ConvertToID("iDontThinЯ"))
+	if act != "error" && act != ErrorPage {
 		t.Log("not error when error")
 		t.Fail()
 	}
@@ -25,8 +27,8 @@ func TestFindActualDB(t *testing.T) {
 func TestFindInsertAndWasHereDB(t *testing.T) {
 	link := "test"
 
-	insertDB(getLastDB()+1, link)
-	ind := wasHereDB(link)
+	InsertDB(GetLastDB()+1, link)
+	ind := WasHereDB(link)
 
 	if ind <= 0 {
 		t.Log("insertDB() or wasHere() is broken.")
@@ -35,9 +37,9 @@ func TestFindInsertAndWasHereDB(t *testing.T) {
 }
 
 func TestGetLastDB(t *testing.T) {
-	lastID := getLastDB()
+	lastID := GetLastDB()
 
-	db := connectDB()
+	db := ConnectDB()
 	if err := db.Ping(); err != nil {
 		t.Log(err)
 		t.Fail()

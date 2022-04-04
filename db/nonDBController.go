@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"encoding/json"
@@ -8,15 +8,19 @@ import (
 	"strings"
 )
 
-var data map[int]string
+var Data map[int]string
 
-const (
+var (
 	pathData = "data/data.json"
 )
 
-func getDataNonDB() {
-	if checkCreateData() {
-		data = make(map[int]string)
+func GetPath() string {
+	return pathData
+}
+
+func GetDataNonDB(pathData string) {
+	if CheckCreateData(pathData) {
+		Data = make(map[int]string)
 		return
 	}
 
@@ -25,14 +29,14 @@ func getDataNonDB() {
 		log.Fatal(err)
 	}
 
-	err = json.Unmarshal(file, &data)
+	err = json.Unmarshal(file, &Data)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func checkCreateData() bool {
-	exdir, err := exists(pathData[:strings.Index(pathData, "/")])
+func CheckCreateData(pathData string) bool {
+	exdir, err := Exists(pathData[:strings.Index(pathData, "/")])
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,7 +48,7 @@ func checkCreateData() bool {
 		}
 	}
 
-	ex, err := exists(pathData)
+	ex, err := Exists(pathData)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -62,7 +66,7 @@ func checkCreateData() bool {
 	return true
 }
 
-func exists(path string) (bool, error) {
+func Exists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true, nil
@@ -73,9 +77,9 @@ func exists(path string) (bool, error) {
 	return false, err
 }
 
-func findActualNonDB(ID int) string {
-	getDataNonDB()
-	link, exist := data[ID]
+func FindActualNonDB(ID int) string {
+	GetDataNonDB(pathData)
+	link, exist := Data[ID]
 	if !exist {
 		return "error"
 	}
@@ -83,14 +87,14 @@ func findActualNonDB(ID int) string {
 	return link
 }
 
-func getLastNonDB() int {
-	getDataNonDB()
-	return len(data)
+func GetLastNonDB() int {
+	GetDataNonDB(pathData)
+	return len(Data)
 }
 
-func wasHereNonDB(actualLink string) int {
-	getDataNonDB()
-	for key, value := range data {
+func WasHereNonDB(actualLink string) int {
+	GetDataNonDB(pathData)
+	for key, value := range Data {
 		if value == actualLink {
 			return key
 		}
@@ -99,10 +103,10 @@ func wasHereNonDB(actualLink string) int {
 	return -1
 }
 
-func insertNonDB(ID int, actualLink string) {
-	getDataNonDB()
-	data[ID] = actualLink
-	str, err := json.Marshal(data)
+func InsertNonDB(ID int, actualLink string) {
+	GetDataNonDB(pathData)
+	Data[ID] = actualLink
+	str, err := json.Marshal(Data)
 	if err != nil {
 		log.Fatal(err)
 	}
